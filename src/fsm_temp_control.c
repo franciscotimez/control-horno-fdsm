@@ -7,28 +7,29 @@
 
 #include "fsm_temp_control.h"
 
-#define PERIODO_DE_EJECUCION 200
 
 void iniciarFSM() {
 	// Iniciar interfaces
-	initInterfaces(PERIODO_DE_EJECUCION);
+	initInterfaces();
+	setTimer(PERIODO_DE_EJECUCION);
 	estadoActual = DESCONECTADO;
 	return;
 }
 
 
 void actualizarFSM() {
-	if( timerFSM() ) {
+	if( timerOk() ) {
 		switch(estadoActual){
 		case DESCONECTADO:
 			// Setear salidas
 			setHornoState(FALSE);
 			indicarStop(TRUE);
 			indicarOk(FALSE);
+			indicarFalla(FALSE);
 
 			//checkar condiciones de transicion
 
-			if(SW_state()){
+			if(SW_activo()){
 				if (sensorState()) estadoActual = HORNO_APAGADO;
 				else estadoActual = FALLA_SENSOR;
 			}
@@ -40,11 +41,12 @@ void actualizarFSM() {
 			setHornoState(TRUE);
 			indicarStop(FALSE);
 			indicarOk(TRUE);
+			indicarFalla(FALSE);
 
 			//checkar condiciones de transicion
-			if(SW_state()){
+			if(SW_activo()){
 				if (sensorState()) {
-					if(calentar()) estadoActual = HORNO_ENCENDIDO;
+					if(tempSetPointFSM > getTemperatura()) estadoActual = HORNO_ENCENDIDO;
 					else estadoActual = HORNO_APAGADO;
 				}
 				else estadoActual = FALLA_SENSOR;
@@ -57,11 +59,12 @@ void actualizarFSM() {
 			setHornoState(FALSE);
 			indicarStop(FALSE);
 			indicarOk(TRUE);
+			indicarFalla(FALSE);
 
 			//checkar condiciones de transicion
-			if(SW_state()){
+			if(SW_activo()){
 				if (sensorState()) {
-					if(calentar()) estadoActual = HORNO_ENCENDIDO;
+					if(tempSetPointFSM > getTemperatura()) estadoActual = HORNO_ENCENDIDO;
 					else estadoActual = HORNO_APAGADO;
 				}
 				else estadoActual = FALLA_SENSOR;
@@ -73,12 +76,13 @@ void actualizarFSM() {
 			setHornoState(FALSE);
 			indicarStop(FALSE);
 			indicarOk(FALSE);
+			indicarFalla(TRUE);
 
 			//checkar condiciones de transicion
-			if(!SW_state())estadoActual = DESCONECTADO;
+			if(!SW_activo())estadoActual = DESCONECTADO;
 			break;
 		}
-		mostrarEstadoUART();
+		mostrarEstadoUART(tempSetPointFSM);
 	}
 	return;
 }

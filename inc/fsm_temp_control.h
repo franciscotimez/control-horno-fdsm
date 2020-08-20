@@ -11,6 +11,9 @@
 // Dependencias
 #include "interfaces.h"
 
+#define PERIODO_DE_EJECUCION 200
+
+static float tempSetPointFSM = 30.0;
 
 // Estados de la maquina
 typedef enum{

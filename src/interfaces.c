@@ -8,7 +8,7 @@
 #include "interfaces.h"
 
 // Iniciar interfaces
-void initInterfaces(uint64_t periodoFSM){
+void initInterfaces(){
 	//iniciar placa
 	boardInit();
 
@@ -26,19 +26,22 @@ void initInterfaces(uint64_t periodoFSM){
 	// Iniciar LEDs
 	gpioWrite(LED_OK_PIN, FALSE);
 	gpioWrite(LED_STOP_PIN, FALSE);
+	gpioWrite(LED_FALLA_PIN, FALSE);
 
 	//Iniciar Valores de estado del controlador
 	getTemperatura();
-	setSetPoint(30.0);
-
-	// Inicio del timer
-	delayInit( &timer, periodoFSM );
 
 	return;
 }
 /**
  * Funciones de las interfaces
  */
+
+// Setear periodo del timer
+void setTimer(uint64_t periodo){
+	delayInit( &timer, periodo );
+	return;
+}
 
 // Obtiene la temperatura del sensor
 float	getTemperatura() {
@@ -59,19 +62,8 @@ bool_t	getHornoState(){
 	return estadoHorno;
 }
 
-// Establece el set point del horno.
-void	setSetPoint(float temp){
-	tempSetPoint = temp;
-	return;
-}
-
-// Devuelve el setpoint actual
-float	getSetPoint(){
-	return tempSetPoint;
-}
-
 // Muestra por teminal el estado del controlador
-void	mostrarEstadoUART(){
+void	mostrarEstadoUART(float tempSetPoint ){
 	uint8_t clearSequence[] = { 27, '[', '2', 'J', 27, '[', 'H'};
 	uartWriteByteArray(UART_USB, clearSequence, 7);
 
@@ -92,7 +84,12 @@ void	indicarOk(bool_t state){
 	return;
 }
 
-bool_t	SW_state(){
+void	indicarFalla(bool_t state){
+	gpioWrite(LED_FALLA_PIN, state);
+	return;
+}
+
+bool_t	SW_activo(){
 	return gpioRead(SW_PIN);
 }
 
@@ -102,12 +99,6 @@ bool_t	sensorState(){
 	else return FALSE;
 }
 
-bool_t 	calentar(){
-	getTemperatura();
-	if(tempSetPoint > temperaturaHorno) return TRUE;
-	else return FALSE;
-}
-
-bool_t	timerFSM(){
+bool_t	timerOk(){
 	return delayRead( &timer );
 }
