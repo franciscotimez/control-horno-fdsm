@@ -32,8 +32,6 @@ typedef struct{
 
 /*=====[Definitions of private global variables]=============================*/
 
-
-
 bool_t maxInit(max6675_t* max6675, spiMap_t spi, gpioMap_t CS );
 bool_t readTemp(max6675_t* max6675);
 static bool_t readRaw(max6675_t* max6675);

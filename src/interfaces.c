@@ -68,7 +68,10 @@ void	mostrarEstadoUART(float tempSetPoint ){
 	uartWriteByteArray(UART_USB, clearSequence, 7);
 
 	printf("---------------------------------\r\n");
-	printf("Temperatura Actual:   %7.2f\r\n", temperaturaHorno );
+	if(max.status == MAX_OK)
+		printf("Temperatura Actual:   %7.2f\r\n", temperaturaHorno );
+	else
+		printf("Falla Termocupla: %s\r\n", (max.status == MAX_FAIL)?"Falla de comunicacion":"Termocupla desconectada." );
 	printf("Temperatura SetPoint: %7.2f\r\n", tempSetPoint );
 	printf("Horno:                %s\r\n", estadoHorno?"Encendido":"Apagado" );
 	return;

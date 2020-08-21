@@ -29,21 +29,39 @@ max6675_t max;
 
 delay_t timer;
 
-// Iniciar interfaces
+/*
+ * Inicializa las interfaces de la maquina de estados
+ */
 void initInterfaces();
 
 // Funciones de las interfaces
-void 	setTimer(uint64_t periodo);
+
+// Obtiene el valor de temperatura del sensor
 float	getTemperatura();
+
+// checkea si hay una falla en el sensor, devuelve true si el sensor funciona
+bool_t	sensorState();
+
+// Enciende o apaga el horno
 void	setHornoState(bool_t state);
+
+// Obtiene el valor actual del horno
 bool_t	getHornoState();
+
+// Muestra el estado del horno por la uart
 void	mostrarEstadoUART(float tempSetPoint);
+
+// indicadores de estado
 void	indicarStop(bool_t state);
 void	indicarOk(bool_t state);
 void	indicarFalla(bool_t state);
+
 bool_t	SW_activo();
-bool_t	sensorState();
-void 	iniciarTimerFSM();
+
+// Setea el periodo del timer (delay no bloqueante
+void 	setTimer(uint64_t periodo);
+
+// Consulta si el timer ya termino
 bool_t	timerOk();
 
 

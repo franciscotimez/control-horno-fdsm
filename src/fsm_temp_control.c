@@ -71,6 +71,7 @@ void actualizarFSM() {
 			}
 			else estadoActual = DESCONECTADO;
 			break;
+
 		case FALLA_SENSOR:
 			// Setear salidas
 			setHornoState(FALSE);
